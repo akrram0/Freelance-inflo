@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlowState · Inbox</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">FlowState</div>
+        <div class="nav-links">
+            <a href="index.html">Dashboard</a>
+            <a href="inbox.html" class="active">Inbox</a>
+            <span class="user">Sarah 👩‍🎨</span>
+        </div>
+    </nav>
+
+    <main>
+        <h1>Invoices & Contracts</h1>
+
+        <table class="doc-table">
+            <thead>
+                <tr>
+                    <th>Client</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Due date</th>
+                    <th>AI Follow‑up</th>
+                </tr>
+            </thead>
+            <tbody id="inboxTableBody">
+                <!-- Populated by JS -->
+            </tbody>
+        </table>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
