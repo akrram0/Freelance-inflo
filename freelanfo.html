@@ -1,2337 +1,1560 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Freelanfo — Your Work, Unified</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #0f0f11;
-    --surface: #16161a;
-    --surface2: #1e1e24;
-    --surface3: #252530;
-    --border: rgba(255,255,255,0.07);
-    --border-hover: rgba(255,255,255,0.14);
-    --text: #e8e8f0;
-    --text-muted: #7a7a8c;
-    --text-dim: #4a4a5a;
-    --accent: #6c63ff;
-    --accent-glow: rgba(108,99,255,0.18);
-    --accent-soft: rgba(108,99,255,0.12);
-    --green: #22c55e;
-    --green-soft: rgba(34,197,94,0.12);
-    --red: #ef4444;
-    --red-soft: rgba(239,68,68,0.12);
-    --amber: #f59e0b;
-    --amber-soft: rgba(245,158,11,0.12);
-    --blue: #3b82f6;
-    --blue-soft: rgba(59,130,246,0.12);
-    --radius: 12px;
-    --radius-sm: 8px;
-    --radius-lg: 18px;
-    --shadow: 0 4px 24px rgba(0,0,0,0.4);
-  }
-
-  * { margin:0; padding:0; box-sizing:border-box; }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* LAYOUT */
-  .app { display: flex; height: 100vh; overflow: hidden; }
-
-  /* SIDEBAR */
-  .sidebar {
-    width: 240px;
-    flex-shrink: 0;
-    background: var(--surface);
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-    transition: width 0.3s ease;
-    z-index: 100;
-  }
-
-  .sidebar-logo {
-    padding: 24px 20px 20px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .logo-mark {
-    width: 34px; height: 34px;
-    background: var(--accent);
-    border-radius: 9px;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 16px;
-    color: #fff;
-    flex-shrink: 0;
-  }
-
-  .logo-text {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 18px;
-    letter-spacing: -0.3px;
-  }
-
-  .logo-text span { color: var(--accent); }
-
-  .sidebar-nav {
-    flex: 1;
-    padding: 16px 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    overflow-y: auto;
-  }
-
-  .nav-section-label {
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    padding: 12px 10px 6px;
-  }
-
-  .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 9px 12px;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    transition: all 0.18s;
-    color: var(--text-muted);
-    font-size: 14px;
-    font-weight: 400;
-    position: relative;
-    user-select: none;
-  }
-
-  .nav-item:hover { background: var(--surface2); color: var(--text); }
-
-  .nav-item.active {
-    background: var(--accent-soft);
-    color: var(--accent);
-    font-weight: 500;
-  }
-
-  .nav-item .nav-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
-
-  .nav-badge {
-    margin-left: auto;
-    background: var(--accent);
-    color: #fff;
-    font-size: 10px;
-    font-weight: 700;
-    padding: 1px 6px;
-    border-radius: 20px;
-    min-width: 18px;
-    text-align: center;
-  }
-
-  .sidebar-footer {
-    padding: 14px 10px;
-    border-top: 1px solid var(--border);
-  }
-
-  .user-chip {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 9px 10px;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    transition: background 0.18s;
-  }
-
-  .user-chip:hover { background: var(--surface2); }
-
-  .avatar {
-    width: 30px; height: 30px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent), #a78bfa);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 700; color: #fff;
-    flex-shrink: 0;
-  }
-
-  .user-info { flex: 1; min-width: 0; }
-  .user-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .user-plan { font-size: 11px; color: var(--text-muted); }
-
-  /* MAIN */
-  .main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    min-width: 0;
-  }
-
-  /* TOPBAR */
-  .topbar {
-    height: 60px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    padding: 0 24px;
-    gap: 16px;
-    flex-shrink: 0;
-    background: var(--surface);
-  }
-
-  .topbar-title {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 18px;
-    flex: 1;
-  }
-
-  .topbar-actions { display: flex; align-items: center; gap: 10px; }
-
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 16px;
-    border-radius: var(--radius-sm);
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    border: none;
-    transition: all 0.18s;
-    font-family: 'DM Sans', sans-serif;
-    white-space: nowrap;
-  }
-
-  .btn-primary {
-    background: var(--accent);
-    color: #fff;
-  }
-  .btn-primary:hover { background: #7c74ff; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(108,99,255,0.4); }
-
-  .btn-ghost {
-    background: transparent;
-    color: var(--text-muted);
-    border: 1px solid var(--border);
-  }
-  .btn-ghost:hover { background: var(--surface2); color: var(--text); border-color: var(--border-hover); }
-
-  .btn-danger {
-    background: var(--red-soft);
-    color: var(--red);
-    border: 1px solid rgba(239,68,68,0.2);
-  }
-  .btn-danger:hover { background: rgba(239,68,68,0.2); }
-
-  .btn-sm { padding: 5px 12px; font-size: 12px; }
-
-  .mobile-menu-btn {
-    display: none;
-    background: none;
-    border: none;
-    color: var(--text);
-    font-size: 22px;
-    cursor: pointer;
-    padding: 4px;
-  }
-
-  /* CONTENT */
-  .content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 28px 28px;
-  }
-
-  /* PANELS */
-  .panel { display: none; }
-  .panel.active { display: block; }
-
-  /* STATS ROW */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    margin-bottom: 24px;
-  }
-
-  .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    position: relative;
-    overflow: hidden;
-    transition: border-color 0.2s;
-  }
-
-  .stat-card:hover { border-color: var(--border-hover); }
-
-  .stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-  }
-
-  .stat-card.green::before { background: var(--green); }
-  .stat-card.purple::before { background: var(--accent); }
-  .stat-card.amber::before { background: var(--amber); }
-  .stat-card.blue::before { background: var(--blue); }
-
-  .stat-label { font-size: 12px; color: var(--text-muted); font-weight: 500; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .stat-value { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 700; margin-bottom: 4px; }
-  .stat-delta { font-size: 12px; color: var(--text-muted); }
-  .stat-delta.up { color: var(--green); }
-  .stat-delta.down { color: var(--red); }
-
-  /* CARDS */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-    transition: border-color 0.2s;
-  }
-
-  .card:hover { border-color: var(--border-hover); }
-
-  .card-header {
-    padding: 18px 20px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-  }
-
-  .card-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 15px;
-    font-weight: 600;
-  }
-
-  .card-body { padding: 20px; }
-
-  /* GRID LAYOUTS */
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
-
-  /* TABLE */
-  .table { width: 100%; border-collapse: collapse; }
-  .table th {
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    color: var(--text-dim);
-    padding: 10px 16px;
-    text-align: left;
-    border-bottom: 1px solid var(--border);
-  }
-  .table td {
-    padding: 12px 16px;
-    font-size: 13.5px;
-    border-bottom: 1px solid var(--border);
-    vertical-align: middle;
-  }
-  .table tr:last-child td { border-bottom: none; }
-  .table tr:hover td { background: var(--surface2); }
-
-  /* BADGES */
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.2px;
-  }
-
-  .badge-green { background: var(--green-soft); color: var(--green); }
-  .badge-red { background: var(--red-soft); color: var(--red); }
-  .badge-amber { background: var(--amber-soft); color: var(--amber); }
-  .badge-blue { background: var(--blue-soft); color: var(--blue); }
-  .badge-purple { background: var(--accent-soft); color: var(--accent); }
-  .badge-gray { background: rgba(255,255,255,0.06); color: var(--text-muted); }
-
-  /* PROGRESS */
-  .progress-bar {
-    height: 6px;
-    background: var(--surface3);
-    border-radius: 3px;
-    overflow: hidden;
-  }
-
-  .progress-fill {
-    height: 100%;
-    border-radius: 3px;
-    background: var(--accent);
-    transition: width 0.6s ease;
-  }
-
-  .progress-fill.green { background: var(--green); }
-  .progress-fill.amber { background: var(--amber); }
-
-  /* FORM ELEMENTS */
-  .form-group { margin-bottom: 16px; }
-  .form-label { font-size: 12px; font-weight: 500; color: var(--text-muted); display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px; }
-  .form-input {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 10px 14px;
-    font-size: 14px;
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    transition: border-color 0.18s;
-    outline: none;
-  }
-  .form-input:focus { border-color: var(--accent); }
-  .form-input::placeholder { color: var(--text-dim); }
-  select.form-input { cursor: pointer; }
-  textarea.form-input { resize: vertical; min-height: 90px; }
-
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-
-  /* SEARCH BAR */
-  .search-bar {
-    position: relative;
-    flex: 1;
-    max-width: 280px;
-  }
-
-  .search-bar input {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 8px 12px 8px 36px;
-    font-size: 13px;
-    color: var(--text);
-    outline: none;
-    font-family: 'DM Sans', sans-serif;
-    transition: border-color 0.18s;
-  }
-
-  .search-bar input:focus { border-color: var(--accent); }
-  .search-bar input::placeholder { color: var(--text-dim); }
-
-  .search-bar::before {
-    content: '⌕';
-    position: absolute;
-    left: 11px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-dim);
-    font-size: 16px;
-    pointer-events: none;
-  }
-
-  /* TIMER */
-  .timer-display {
-    font-family: 'Syne', sans-serif;
-    font-size: 52px;
-    font-weight: 700;
-    text-align: center;
-    letter-spacing: -2px;
-    padding: 30px 0 24px;
-  }
-
-  .timer-controls { display: flex; justify-content: center; gap: 10px; margin-bottom: 24px; }
-
-  .timer-btn {
-    width: 50px; height: 50px;
-    border-radius: 50%;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-    transition: all 0.18s;
-    display: flex; align-items: center; justify-content: center;
-  }
-
-  .timer-btn.play { background: var(--accent); color: #fff; }
-  .timer-btn.play:hover { background: #7c74ff; transform: scale(1.05); }
-  .timer-btn.stop { background: var(--surface3); color: var(--text); }
-  .timer-btn.stop:hover { background: var(--red-soft); color: var(--red); }
-  .timer-btn.reset { background: var(--surface3); color: var(--text-muted); }
-  .timer-btn.reset:hover { background: var(--surface2); color: var(--text); }
-
-  /* INVOICES SPECIFIC */
-  .invoice-total {
-    font-family: 'Syne', sans-serif;
-    font-size: 22px;
-    font-weight: 700;
-  }
-
-  /* CLIENT CARD */
-  .client-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 18px;
-    transition: all 0.2s;
-    cursor: pointer;
-  }
-  .client-card:hover { border-color: var(--border-hover); transform: translateY(-2px); box-shadow: var(--shadow); }
-
-  .client-avatar {
-    width: 42px; height: 42px;
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-    margin-bottom: 12px;
-  }
-
-  /* PIPELINE */
-  .pipeline { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-
-  .pipeline-col {
-    background: var(--surface2);
-    border-radius: var(--radius);
-    padding: 14px;
-    min-height: 300px;
-  }
-
-  .pipeline-col-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .pipeline-col-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; }
-
-  .pipeline-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 12px;
-    margin-bottom: 8px;
-    cursor: pointer;
-    transition: all 0.18s;
-  }
-  .pipeline-card:hover { border-color: var(--accent); transform: translateX(2px); }
-  .pipeline-card-title { font-size: 13px; font-weight: 500; margin-bottom: 6px; }
-  .pipeline-card-meta { font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between; }
-
-  /* CHART BARS */
-  .chart-bars {
-    display: flex;
-    align-items: flex-end;
-    gap: 8px;
-    height: 120px;
-    padding: 0 4px;
-  }
-
-  .chart-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
-  .chart-bar {
-    width: 100%;
-    background: var(--accent-soft);
-    border-radius: 4px 4px 0 0;
-    transition: height 0.6s ease;
-    cursor: pointer;
-    position: relative;
-  }
-  .chart-bar:hover { background: var(--accent); }
-  .chart-bar-label { font-size: 10px; color: var(--text-dim); }
-
-  /* NOTIFICATIONS DOT */
-  .notif-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--accent);
-    position: absolute;
-    top: 6px; right: 6px;
-  }
-
-  /* SIGNUP SCREEN */
-  .signup-screen {
-    position: fixed;
-    inset: 0;
-    background: var(--bg);
-    z-index: 9000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
-
-  .signup-box {
-    width: 100%;
-    max-width: 420px;
-    animation: modalIn 0.35s ease;
-  }
-
-  .signup-logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 40px;
-  }
-
-  .signup-logo .logo-mark { width: 40px; height: 40px; font-size: 20px; }
-  .signup-logo .logo-text { font-size: 22px; }
-
-  .signup-headline {
-    font-family: 'Syne', sans-serif;
-    font-size: 28px;
-    font-weight: 800;
-    line-height: 1.2;
-    margin-bottom: 8px;
-    letter-spacing: -0.5px;
-  }
-
-  .signup-sub {
-    font-size: 14px;
-    color: var(--text-muted);
-    margin-bottom: 32px;
-  }
-
-  .signup-field {
-    margin-bottom: 14px;
-  }
-
-  .signup-field label {
-    display: block;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--text-muted);
-    margin-bottom: 7px;
-  }
-
-  .signup-field input {
-    width: 100%;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 13px 16px;
-    font-size: 15px;
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
-
-  .signup-field input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px var(--accent-soft);
-  }
-
-  .signup-field input::placeholder { color: var(--text-dim); }
-
-  .signup-btn {
-    width: 100%;
-    padding: 14px;
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius-sm);
-    font-size: 15px;
-    font-weight: 600;
-    font-family: 'Syne', sans-serif;
-    cursor: pointer;
-    margin-top: 8px;
-    transition: all 0.2s;
-    letter-spacing: 0.2px;
-  }
-
-  .signup-btn:hover {
-    background: #7c74ff;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(108,99,255,0.4);
-  }
-
-  .signup-btn:active { transform: translateY(0); }
-
-  .signup-divider {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 20px 0;
-    color: var(--text-dim);
-    font-size: 12px;
-  }
-
-  .signup-divider::before,
-  .signup-divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
-  .signup-footer {
-    text-align: center;
-    font-size: 12px;
-    color: var(--text-dim);
-    margin-top: 20px;
-  }
-
-  .signup-footer span { color: var(--accent); cursor: pointer; }
-
-  .signup-error {
-    background: var(--red-soft);
-    border: 1px solid rgba(239,68,68,0.25);
-    color: var(--red);
-    border-radius: var(--radius-sm);
-    padding: 10px 14px;
-    font-size: 13px;
-    margin-bottom: 14px;
-    display: none;
-  }
-
-  /* SCROLLBAR */
-  ::-webkit-scrollbar { width: 5px; height: 5px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 4px; }
-
-  /* MODAL */
-  .modal-overlay {
-    display: none;
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.7);
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    backdrop-filter: blur(4px);
-  }
-  .modal-overlay.open { display: flex; }
-
-  .modal {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 28px;
-    width: 100%;
-    max-width: 520px;
-    max-height: 90vh;
-    overflow-y: auto;
-    animation: modalIn 0.22s ease;
-  }
-
-  @keyframes modalIn {
-    from { opacity: 0; transform: translateY(16px) scale(0.97); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
-  }
-
-  .modal-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: 20px;
-  }
-
-  .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
-
-  /* TABS */
-  .tabs { display: flex; gap: 2px; background: var(--surface2); border-radius: var(--radius-sm); padding: 3px; margin-bottom: 20px; }
-
-  .tab {
-    flex: 1;
-    padding: 8px 12px;
-    font-size: 13px;
-    font-weight: 500;
-    border-radius: 6px;
-    cursor: pointer;
-    text-align: center;
-    color: var(--text-muted);
-    transition: all 0.18s;
-    border: none;
-    background: none;
-    font-family: 'DM Sans', sans-serif;
-  }
-
-  .tab.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
-
-  /* TIMELINE */
-  .timeline { position: relative; padding-left: 22px; }
-  .timeline::before { content: ''; position: absolute; left: 6px; top: 0; bottom: 0; width: 1px; background: var(--border); }
-
-  .timeline-item { position: relative; margin-bottom: 18px; }
-  .timeline-item::before {
-    content: '';
-    position: absolute;
-    left: -18px; top: 4px;
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--accent);
-    border: 2px solid var(--surface);
-  }
-  .timeline-time { font-size: 11px; color: var(--text-dim); margin-bottom: 2px; }
-  .timeline-text { font-size: 13px; color: var(--text-muted); }
-  .timeline-text strong { color: var(--text); }
-
-  /* RESPONSIVE */
-  @media (max-width: 1100px) {
-    .stats-grid { grid-template-columns: repeat(2, 1fr); }
-    .pipeline { grid-template-columns: repeat(2, 1fr); }
-  }
-
-  @media (max-width: 900px) {
-    .sidebar { position: fixed; left: -240px; top: 0; bottom: 0; transition: left 0.3s ease; }
-    .sidebar.open { left: 0; box-shadow: 4px 0 30px rgba(0,0,0,0.5); }
-    .mobile-menu-btn { display: block; }
-    .two-col, .three-col { grid-template-columns: 1fr; }
-    .form-grid { grid-template-columns: 1fr; }
-    .pipeline { grid-template-columns: 1fr 1fr; }
-  }
-
-  @media (max-width: 600px) {
-    .content { padding: 16px; }
-    .stats-grid { grid-template-columns: 1fr 1fr; }
-    .pipeline { grid-template-columns: 1fr; }
-    .topbar { padding: 0 16px; }
-    .timer-display { font-size: 38px; }
-    .table { font-size: 12px; }
-    .table th, .table td { padding: 10px 10px; }
-  }
-
-  /* EMPTY STATE */
-  .empty-state {
-    text-align: center;
-    padding: 48px 20px;
-    color: var(--text-muted);
-  }
-  .empty-state .empty-icon { font-size: 42px; margin-bottom: 12px; }
-  .empty-state p { font-size: 14px; }
-
-  /* INCOME LINE MINI */
-  .income-line {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 13.5px;
-  }
-  .income-line:last-child { border-bottom: none; }
-  .income-line .label { color: var(--text-muted); }
-  .income-line .amount { font-weight: 600; }
-
-  /* OVERLAY for mobile sidebar */
-  .sidebar-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 99;
-  }
-  .sidebar-overlay.open { display: block; }
-
-  .tag {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 500;
-    background: var(--surface3);
-    color: var(--text-muted);
-    margin-right: 4px;
-    margin-bottom: 4px;
-  }
-
-  .divider { height: 1px; background: var(--border); margin: 20px 0; }
-
-  /* Toast */
-  .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
-  .toast {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--accent);
-    border-radius: var(--radius-sm);
-    padding: 12px 18px;
-    font-size: 13.5px;
-    min-width: 200px;
-    max-width: 300px;
-    animation: toastIn 0.22s ease;
-    box-shadow: var(--shadow);
-  }
-  .toast.green { border-left-color: var(--green); }
-  .toast.red { border-left-color: var(--red); }
-  @keyframes toastIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freelanfo - All-in-One Freelance Management Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0f172a;
+            --primary-light: #1e293b;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Auth Screens */
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            padding: 1rem;
+        }
+
+        .auth-box {
+            background: var(--surface);
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 420px;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .auth-logo .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--accent);
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .auth-logo h1 {
+            font-size: 1.75rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-logo p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            color: var(--text);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            background: var(--surface);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg);
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .auth-footer a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 0 1.5rem;
+            display: none;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 64px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--accent);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            display: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 500;
+            transition: color 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--accent);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .mobile-menu-btn {
+            display: block;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text);
+        }
+
+        /* Layout */
+        .app-container {
+            display: none;
+            margin-top: 64px;
+            min-height: calc(100vh - 64px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            position: fixed;
+            height: calc(100vh - 64px);
+            overflow-y: auto;
+            transform: translateX(-100%);
+            transition: transform 0.3s;
+            z-index: 100;
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        .sidebar-section {
+            padding: 1.5rem 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.625rem 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 0.25rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: var(--bg);
+            color: var(--accent);
+        }
+
+        .nav-item.active {
+            background: #eff6ff;
+            font-weight: 500;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            opacity: 0.7;
+        }
+
+        .badge {
+            margin-left: auto;
+            background: var(--accent);
+            color: white;
+            font-size: 0.75rem;
+            padding: 0.125rem 0.5rem;
+            border-radius: 9999px;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 0;
+            padding: 1.5rem;
+            max-width: 100%;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-muted);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.75rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .stat-icon.blue { background: #eff6ff; }
+        .stat-icon.green { background: #ecfdf5; }
+        .stat-icon.orange { background: #fff7ed; }
+        .stat-icon.red { background: #fef2f2; }
+
+        .stat-value {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-change {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+
+        .card-body {
+            padding: 1.25rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.125rem;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Project Board */
+        .board {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+        }
+
+        .board-column {
+            min-width: 280px;
+            background: var(--bg);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .board-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .board-count {
+            background: var(--border);
+            padding: 0.125rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+        }
+
+        .task-card {
+            background: var(--surface);
+            padding: 1rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .task-card:hover {
+            box-shadow: var(--shadow);
+            transform: translateY(-1px);
+        }
+
+        .task-title {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .task-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .task-tag {
+            padding: 0.125rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* Time Tracker */
+        .timer-display {
+            text-align: center;
+            padding: 2rem;
+            background: var(--bg);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .timer-time {
+            font-size: 3rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            color: var(--primary);
+            font-family: 'Courier New', monospace;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .timer-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            transition: all 0.2s;
+        }
+
+        .timer-btn.play {
+            background: var(--success);
+            color: white;
+        }
+
+        .timer-btn.pause {
+            background: var(--warning);
+            color: white;
+        }
+
+        .timer-btn.stop {
+            background: var(--danger);
+            color: white;
+        }
+
+        .timer-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 1rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--surface);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+        }
+
+        .modal-close:hover {
+            background: var(--bg);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.625rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            background: var(--surface);
+        }
+
+        /* User Profile Display */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .user-profile:hover {
+            background: var(--bg);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .user-info {
+            display: none;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .user-email {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Responsive */
+        @media (min-width: 768px) {
+            .nav-links {
+                display: flex;
+            }
+
+            .mobile-menu-btn {
+                display: none;
+            }
+
+            .sidebar {
+                transform: translateX(0);
+                position: relative;
+                height: auto;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .content-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .content-grid .card:first-child {
+                grid-column: 1 / -1;
+            }
+
+            .user-info {
+                display: block;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .sidebar {
+                position: fixed;
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 260px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .content-grid {
+                grid-template-columns: 2fr 1fr;
+            }
+
+            .content-grid .card:first-child {
+                grid-column: span 2;
+            }
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+    </style>
 </head>
 <body>
 
-<!-- SIGNUP SCREEN -->
-<div class="signup-screen" id="signupScreen">
-  <div class="signup-box">
-    <div class="signup-logo">
-      <div class="logo-mark">F</div>
-      <div class="logo-text">Freel<span>anfo</span></div>
+    <!-- Sign Up Screen -->
+    <div class="auth-container" id="signupScreen">
+        <div class="auth-box">
+            <div class="auth-logo">
+                <div class="logo-icon">F</div>
+                <h1>Join Freelanfo</h1>
+                <p>Start managing your freelance business like a pro</p>
+            </div>
+
+            <form id="signupForm" onsubmit="handleSignup(event)">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-input" id="userName" placeholder="Enter your full name" required>
+                    <div class="error-message" id="nameError">Please enter your name</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-input" id="userEmail" placeholder="you@example.com" required>
+                    <div class="error-message" id="emailError">Please enter a valid email</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" id="userPassword" placeholder="Create a password" required minlength="6">
+                    <div class="error-message" id="passwordError">Password must be at least 6 characters</div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="margin-top: 0.5rem;">
+                    Create Account
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                Already have an account? <a onclick="showLogin()">Sign in</a>
+            </div>
+        </div>
     </div>
-    <div class="signup-headline">Your freelance<br>work, unified.</div>
-    <div class="signup-sub">Create your free account and take control of every project, invoice, and client — all in one place.</div>
 
-    <div class="signup-error" id="signupError"></div>
+    <!-- Login Screen -->
+    <div class="auth-container hidden" id="loginScreen">
+        <div class="auth-box">
+            <div class="auth-logo">
+                <div class="logo-icon">F</div>
+                <h1>Welcome Back</h1>
+                <p>Sign in to continue to Freelanfo</p>
+            </div>
 
-    <div class="signup-field">
-      <label>Full Name</label>
-      <input type="text" id="signupName" placeholder="e.g. Alex Karim" autocomplete="name" onkeydown="if(event.key==='Enter')document.getElementById('signupEmail').focus()">
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-input" id="loginEmail" placeholder="you@example.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" id="loginPassword" placeholder="Enter your password" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="margin-top: 0.5rem;">
+                    Sign In
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                Don't have an account? <a onclick="showSignup()">Create one</a>
+            </div>
+        </div>
     </div>
-    <div class="signup-field">
-      <label>Email Address</label>
-      <input type="email" id="signupEmail" placeholder="you@example.com" autocomplete="email" onkeydown="if(event.key==='Enter')handleSignup()">
-    </div>
 
-    <button class="signup-btn" onclick="handleSignup()">Get Started — It's Free</button>
+    <!-- Navigation (Hidden until logged in) -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+                <div class="logo">
+                    <div class="logo-icon">F</div>
+                    <span>Freelanfo</span>
+                </div>
+            </div>
+            
+            <div class="nav-links">
+                <a href="#" class="active" onclick="showDashboard()">Dashboard</a>
+                <a href="#" onclick="showProjects()">Projects</a>
+                <a href="#" onclick="showClients()">Clients</a>
+                <a href="#" onclick="showFinance()">Finance</a>
+            </div>
 
-    <div class="signup-footer">
-      By signing up you agree to our <span>Terms</span> and <span>Privacy Policy</span>.
-    </div>
-  </div>
-</div>
-
-  <!-- SIDEBAR OVERLAY (mobile) -->
-  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-
-  <!-- SIDEBAR -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo">
-      <div class="logo-mark">F</div>
-      <div class="logo-text">Freel<span>anfo</span></div>
-    </div>
-
-    <nav class="sidebar-nav">
-      <div class="nav-item active" onclick="navigate('dashboard', this)">
-        <span class="nav-icon">⬡</span>
-        <span>Dashboard</span>
-      </div>
-
-      <div class="nav-section-label">Work</div>
-
-      <div class="nav-item" onclick="navigate('projects', this)">
-        <span class="nav-icon">◫</span>
-        <span>Projects</span>
-        <span class="nav-badge">5</span>
-      </div>
-      <div class="nav-item" onclick="navigate('pipeline', this)">
-        <span class="nav-icon">⊞</span>
-        <span>Pipeline</span>
-      </div>
-      <div class="nav-item" onclick="navigate('timer', this)">
-        <span class="nav-icon">⏱</span>
-        <span>Time Tracker</span>
-      </div>
-      <div class="nav-item" onclick="navigate('tasks', this)">
-        <span class="nav-icon">✓</span>
-        <span>Tasks</span>
-        <span class="nav-badge">8</span>
-      </div>
-
-      <div class="nav-section-label">Finance</div>
-
-      <div class="nav-item" onclick="navigate('invoices', this)">
-        <span class="nav-icon">◱</span>
-        <span>Invoices</span>
-        <span class="nav-badge">3</span>
-      </div>
-      <div class="nav-item" onclick="navigate('expenses', this)">
-        <span class="nav-icon">◈</span>
-        <span>Expenses</span>
-      </div>
-      <div class="nav-item" onclick="navigate('finance', this)">
-        <span class="nav-icon">▲</span>
-        <span>Reports</span>
-      </div>
-
-      <div class="nav-section-label">Clients</div>
-
-      <div class="nav-item" onclick="navigate('clients', this)">
-        <span class="nav-icon">◎</span>
-        <span>Clients</span>
-      </div>
-      <div class="nav-item" onclick="navigate('proposals', this)">
-        <span class="nav-icon">◧</span>
-        <span>Proposals</span>
-      </div>
+            <div class="nav-right">
+                <button class="btn btn-secondary" onclick="openModal('newProjectModal')" style="width: auto;">+ New Project</button>
+                <div class="user-profile" onclick="toggleUserMenu()">
+                    <div class="user-avatar" id="navAvatar">U</div>
+                    <div class="user-info">
+                        <div class="user-name" id="navUserName">User</div>
+                        <div class="user-email" id="navUserEmail">user@example.com</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </nav>
 
-    <div class="sidebar-footer">
-      <div class="user-chip">
-        <div class="avatar">AK</div>
-        <div class="user-info">
-          <div class="user-name">Your Name</div>
-          <div class="user-plan">your@email.com</div>
-        </div>
-        <span style="color:var(--text-dim);font-size:12px;">⚙</span>
-      </div>
+    <!-- Main App Container (Hidden until logged in) -->
+    <div class="app-container" id="appContainer">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Main</div>
+                <a href="#" class="nav-item active" onclick="setActive(this); showDashboard();">
+                    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                    Dashboard
+                </a>
+                <a href="#" class="nav-item" onclick="setActive(this); showTasks();">
+                    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                    My Tasks
+                    <span class="badge" id="taskBadge">0</span>
+                </a>
+                <a href="#" class="nav-item" onclick="setActive(this); showTimeTracker();">
+                    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Time Tracker
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">Work</div>
+                <a href="#" class="nav-item" onclick="setActive(this); showProjects();">
+                    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+                    Projects
+                </a>
+                <a href="#" class="nav-item" onclick="setActive(this); showClients();">
+                    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    Clients
+                </a>
+                <a href="#" class="nav-item" onclick="setActive(this); showProposals();">
+                    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Proposals
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">Finance</div>
+                <a href="#" class="nav-item" onclick="setActive(this); showInvoices();">
+                    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                    Invoices
+                    <span class="badge" style="background: var(--warning);">0</span>
+                </a>
+                <a href="#" class="nav-item" onclick="setActive(this); showReports();">
+                    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                    Reports
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">Account</div>
+                <a href="#" class="nav-item" onclick="handleLogout()">
+                    <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    Logout
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <!-- Dynamic content loaded here -->
+        </main>
     </div>
-  </aside>
 
-  <!-- MAIN CONTENT -->
-  <main class="main">
-
-    <!-- TOPBAR -->
-    <div class="topbar">
-      <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
-      <div class="topbar-title" id="topbarTitle">Dashboard</div>
-      <div class="topbar-actions">
-        <div class="search-bar" style="max-width:200px">
-          <input type="text" placeholder="Search…">
+    <!-- New Project Modal -->
+    <div class="modal-overlay" id="newProjectModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Create New Project</h2>
+                <button class="modal-close" onclick="closeModal('newProjectModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="createProject(event)">
+                    <div class="form-group">
+                        <label class="form-label">Project Name</label>
+                        <input type="text" class="form-input" id="projectName" placeholder="e.g., Website Redesign" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Client</label>
+                        <select class="form-select" id="projectClient">
+                            <option value="">Select client...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Budget ($)</label>
+                        <input type="number" class="form-input" id="projectBudget" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Due Date</label>
+                        <input type="date" class="form-input" id="projectDueDate">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create Project</button>
+                </form>
+            </div>
         </div>
-        <button class="btn btn-ghost btn-sm" style="position:relative">
-          🔔
-          <span class="notif-dot"></span>
-        </button>
-        <button class="btn btn-primary btn-sm" id="mainCTA" onclick="openMainCTA()">+ New Project</button>
-      </div>
     </div>
 
-    <!-- CONTENT -->
-    <div class="content">
-
-      <!-- ===== DASHBOARD ===== -->
-      <div class="panel active" id="panel-dashboard">
-
-        <div style="margin-bottom:20px">
-          <div id="dash-greeting" style="font-size:13px;color:var(--text-muted);margin-bottom:4px">Good morning 👋</div>
-          <div id="dash-subline" style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700">Here's your workspace — let's build something.</div>
-        </div>
-
-        <div class="stats-grid">
-          <div class="stat-card green">
-            <div class="stat-label">Revenue (Month)</div>
-            <div class="stat-value" id="stat-revenue">$0</div>
-            <div class="stat-delta">No paid invoices yet</div>
-          </div>
-          <div class="stat-card purple">
-            <div class="stat-label">Active Projects</div>
-            <div class="stat-value" id="stat-projects">0</div>
-            <div class="stat-delta">Add your first project</div>
-          </div>
-          <div class="stat-card amber">
-            <div class="stat-label">Unpaid Invoices</div>
-            <div class="stat-value" id="stat-unpaid">$0</div>
-            <div class="stat-delta">All clear</div>
-          </div>
-          <div class="stat-card blue">
-            <div class="stat-label">Hours Tracked</div>
-            <div class="stat-value">0h</div>
-            <div class="stat-delta">Start the timer</div>
-          </div>
-        </div>
-
-        <div class="two-col" style="margin-bottom:16px">
-          <!-- Revenue Chart -->
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">Revenue — Last 6 Months</div>
-              <span class="badge badge-green">↑ 18%</span>
+    <!-- New Task Modal -->
+    <div class="modal-overlay" id="newTaskModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Add New Task</h2>
+                <button class="modal-close" onclick="closeModal('newTaskModal')">&times;</button>
             </div>
-            <div class="card-body">
-              <div class="chart-bars" id="revenueChart"></div>
-              <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:10px;color:var(--text-dim);padding:0 4px" id="revenueLabels"></div>
+            <div class="modal-body">
+                <form onsubmit="createTask(event)">
+                    <div class="form-group">
+                        <label class="form-label">Task Title</label>
+                        <input type="text" class="form-input" id="taskTitle" placeholder="What needs to be done?" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Project</label>
+                        <select class="form-select" id="taskProject">
+                            <option value="">Select project...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Priority</label>
+                        <select class="form-select" id="taskPriority">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Task</button>
+                </form>
             </div>
-          </div>
-
-          <!-- Recent Activity -->
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">Recent Activity</div>
-            </div>
-            <div class="card-body" style="padding:16px 20px">
-              <div class="timeline" id="activityTimeline">
-                <div style="color:var(--text-muted);font-size:13px;padding:8px 0">No activity yet — your actions will appear here.</div>
-              </div>
-            </div>
-          </div>
         </div>
+    </div>
 
-        <!-- Projects Overview -->
-        <div class="card" style="margin-bottom:16px">
-          <div class="card-header">
-            <div class="card-title">Active Projects</div>
-            <button class="btn btn-ghost btn-sm" onclick="navigate('projects', document.querySelector('[onclick*=\"projects\"]'))">View All →</button>
-          </div>
-          <div style="overflow-x:auto">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Project</th>
-                  <th>Client</th>
-                  <th>Progress</th>
-                  <th>Due</th>
-                  <th>Value</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="dash-projects-tbody">
-                <tr><td colspan="6" style="text-align:center;padding:28px;color:var(--text-muted)">No projects yet — click <strong>+ New Project</strong> to get started.</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+    <script>
+        // App State
+        let currentUser = null;
+        let projects = [];
+        let tasks = [];
+        let clients = [];
+        let invoices = [];
+        let timeEntries = [];
 
-        <div class="two-col">
-          <!-- Unpaid Invoices -->
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">Pending Invoices</div>
-              <span style="font-family:'Syne';font-weight:700;color:var(--amber)">$3,100</span>
-            </div>
-            <div class="card-body" style="padding:12px 20px" id="dash-pending-invoices">
-              <div style="color:var(--text-muted);font-size:13px;padding:12px 0">No pending invoices.</div>
-            </div>
-          </div>
+        // Auth Functions
+        function handleSignup(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('userName').value.trim();
+            const email = document.getElementById('userEmail').value.trim();
+            const password = document.getElementById('userPassword').value;
 
-          <!-- Quick Tasks -->
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">Today's Tasks</div>
-              <button class="btn btn-ghost btn-sm" onclick="openModal('taskModal')">+ Add</button>
-            </div>
-            <div class="card-body" style="padding:12px 20px">
-              <div id="dashboardTasks"></div>
-            </div>
-          </div>
-        </div>
-      </div>
+            // Validation
+            if (!name || !email || !password) return;
 
-      <!-- ===== PROJECTS ===== -->
-      <div class="panel" id="panel-projects">
-        <div class="card-header" style="padding:0 0 20px;border:none">
-          <div class="card-title" style="font-size:18px">Projects</div>
-          <div style="display:flex;gap:10px;align-items:center">
-            <div class="search-bar">
-              <input type="text" placeholder="Search projects…">
-            </div>
-            <button class="btn btn-primary btn-sm" onclick="openModal('projectModal')">+ New Project</button>
-          </div>
-        </div>
+            // Create user
+            currentUser = {
+                name: name,
+                email: email,
+                initials: name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+            };
 
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px" id="projectsGrid">
-        </div>
-      </div>
+            // Store in localStorage (simulated)
+            localStorage.setItem('freelanfo_user', JSON.stringify(currentUser));
 
-      <!-- ===== PIPELINE ===== -->
-      <div class="panel" id="panel-pipeline">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-          <div style="font-family:'Syne';font-size:18px;font-weight:700">Deal Pipeline</div>
-          <button class="btn btn-primary btn-sm" onclick="openModal('dealModal')">+ Add Deal</button>
-        </div>
-        <div class="pipeline" id="pipelineBoard"></div>
-      </div>
+            // Show app
+            showApp();
+        }
 
-      <!-- ===== TIMER ===== -->
-      <div class="panel" id="panel-timer">
-        <div class="two-col">
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">Time Tracker</div>
-              <span class="badge badge-green" id="timerStatus">Idle</span>
-            </div>
-            <div class="card-body">
-              <div class="form-group">
-                <label class="form-label">Project</label>
-                <select class="form-input" id="timerProject">
-                  <option value="">— Select a project —</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label class="form-label">Description (optional)</label>
-                <input type="text" class="form-input" placeholder="What are you working on?" id="timerDesc">
-              </div>
-              <div class="timer-display" id="timerDisplay">00:00:00</div>
-              <div class="timer-controls">
-                <button class="timer-btn reset" onclick="resetTimer()" title="Reset">↺</button>
-                <button class="timer-btn play" onclick="toggleTimer()" id="timerPlayBtn">▶</button>
-                <button class="timer-btn stop" onclick="stopTimer()" title="Stop & Log">■</button>
-              </div>
-            </div>
-          </div>
+        function handleLogin(e) {
+            e.preventDefault();
+            // For demo, just create a user from login email
+            const email = document.getElementById('loginEmail').value;
+            const name = email.split('@')[0];
+            
+            currentUser = {
+                name: name.charAt(0).toUpperCase() + name.slice(1),
+                email: email,
+                initials: name.substring(0, 2).toUpperCase()
+            };
+            
+            localStorage.setItem('freelanfo_user', JSON.stringify(currentUser));
+            showApp();
+        }
 
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">Time Log</div>
-              <span style="font-size:13px;color:var(--text-muted)">This Week: <strong style="color:var(--text)">18h 40m</strong></span>
-            </div>
-            <div style="overflow-x:auto">
-              <table class="table">
-                <thead>
-                  <tr><th>Project</th><th>Description</th><th>Duration</th><th>Date</th></tr>
-                </thead>
-                <tbody id="timeLogBody">
-              </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
+        function handleLogout() {
+            currentUser = null;
+            localStorage.removeItem('freelanfo_user');
+            location.reload();
+        }
 
-      <!-- ===== TASKS ===== -->
-      <div class="panel" id="panel-tasks">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-          <div style="font-family:'Syne';font-size:18px;font-weight:700">Tasks</div>
-          <button class="btn btn-primary btn-sm" onclick="openModal('taskModal')">+ New Task</button>
-        </div>
+        function showSignup() {
+            document.getElementById('signupScreen').classList.remove('hidden');
+            document.getElementById('loginScreen').classList.add('hidden');
+        }
 
-        <div class="tabs">
-          <button class="tab active" onclick="filterTasks('all',this)">All</button>
-          <button class="tab" onclick="filterTasks('today',this)">Today</button>
-          <button class="tab" onclick="filterTasks('upcoming',this)">Upcoming</button>
-          <button class="tab" onclick="filterTasks('done',this)">Done</button>
-        </div>
+        function showLogin() {
+            document.getElementById('signupScreen').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+        }
 
-        <div class="card">
-          <div style="overflow-x:auto">
-            <table class="table">
-              <thead>
-                <tr><th>Task</th><th>Project</th><th>Priority</th><th>Due</th><th>Status</th><th></th></tr>
-              </thead>
-              <tbody id="tasksBody"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+        function showApp() {
+            // Hide auth screens
+            document.getElementById('signupScreen').classList.add('hidden');
+            document.getElementById('loginScreen').classList.add('hidden');
+            
+            // Show app
+            document.getElementById('navbar').style.display = 'block';
+            document.getElementById('appContainer').style.display = 'flex';
+            
+            // Update user info in nav
+            document.getElementById('navUserName').textContent = currentUser.name;
+            document.getElementById('navUserEmail').textContent = currentUser.email;
+            document.getElementById('navAvatar').textContent = currentUser.initials;
+            
+            // Load dashboard
+            showDashboard();
+        }
 
-      <!-- ===== INVOICES ===== -->
-      <div class="panel" id="panel-invoices">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-          <div style="font-family:'Syne';font-size:18px;font-weight:700">Invoices</div>
-          <div style="display:flex;gap:10px">
-            <button class="btn btn-ghost btn-sm">⬇ Export</button>
-            <button class="btn btn-primary btn-sm" onclick="openModal('invoiceModal')">+ New Invoice</button>
-          </div>
-        </div>
+        // Check for existing session
+        window.onload = function() {
+            const saved = localStorage.getItem('freelanfo_user');
+            if (saved) {
+                currentUser = JSON.parse(saved);
+                showApp();
+            }
+        };
 
-        <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px">
-          <div class="stat-card green">
-            <div class="stat-label">Total Billed (YTD)</div>
-            <div class="stat-value">$0</div>
-          </div>
-          <div class="stat-card amber">
-            <div class="stat-label">Outstanding</div>
-            <div class="stat-value">$0</div>
-          </div>
-          <div class="stat-card blue">
-            <div class="stat-label">Avg. Payment Time</div>
-            <div class="stat-value">— days</div>
-          </div>
-        </div>
+        // Navigation Functions
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
 
-        <div class="card">
-          <div style="overflow-x:auto">
-            <table class="table" id="invoicesTable">
-              <thead>
-                <tr><th>#</th><th>Client</th><th>Project</th><th>Amount</th><th>Issued</th><th>Due</th><th>Status</th><th></th></tr>
-              </thead>
-              <tbody id="invoicesBody"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+        function setActive(element) {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            element.classList.add('active');
+            
+            if (window.innerWidth < 1024) {
+                document.getElementById('sidebar').classList.remove('open');
+            }
+        }
 
-      <!-- ===== EXPENSES ===== -->
-      <div class="panel" id="panel-expenses">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-          <div style="font-family:'Syne';font-size:18px;font-weight:700">Expenses</div>
-          <button class="btn btn-primary btn-sm" onclick="openModal('expenseModal')">+ Log Expense</button>
-        </div>
-
-        <div class="two-col" style="margin-bottom:16px">
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">Expenses by Category</div>
-            </div>
-            <div class="card-body">
-              <div id="expenseCats"></div>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">Monthly Overview</div>
-            </div>
-            <div class="card-body">
-              <div style="display:flex;align-items:flex-end;gap:8px;height:100px">
-                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
-                  <div style="width:100%;background:var(--red-soft);border-radius:4px 4px 0 0;height:40px"></div>
-                  <span style="font-size:10px;color:var(--text-dim)">Oct</span>
+        // View Functions
+        function showDashboard() {
+            const html = `
+                <div class="page-header">
+                    <h1 class="page-title">Welcome, ${currentUser.name.split(' ')[0]}!</h1>
+                    <p class="page-subtitle">Here's your freelance business overview.</p>
                 </div>
-                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
-                  <div style="width:100%;background:var(--red-soft);border-radius:4px 4px 0 0;height:60px"></div>
-                  <span style="font-size:10px;color:var(--text-dim)">Nov</span>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-label">Total Earnings</div>
+                                <div class="stat-value">$0.00</div>
+                                <div class="stat-change">No invoices yet</div>
+                            </div>
+                            <div class="stat-icon blue">💰</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-label">Active Projects</div>
+                                <div class="stat-value">${projects.length}</div>
+                                <div class="stat-change">${projects.length > 0 ? 'In progress' : 'No projects yet'}</div>
+                            </div>
+                            <div class="stat-icon green">📁</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-label">Hours Tracked</div>
+                                <div class="stat-value">0h</div>
+                                <div class="stat-change">Start tracking time</div>
+                            </div>
+                            <div class="stat-icon orange">⏱️</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-label">Outstanding</div>
+                                <div class="stat-value">$0.00</div>
+                                <div class="stat-change">No pending invoices</div>
+                            </div>
+                            <div class="stat-icon red">⚠️</div>
+                        </div>
+                    </div>
                 </div>
-                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
-                  <div style="width:100%;background:var(--red-soft);border-radius:4px 4px 0 0;height:35px"></div>
-                  <span style="font-size:10px;color:var(--text-dim)">Dec</span>
+
+                <div class="content-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Project Board</h3>
+                            <button class="btn btn-secondary" style="padding: 0.375rem 0.75rem; font-size: 0.8rem; width: auto;" onclick="openModal('newProjectModal')">+ New Project</button>
+                        </div>
+                        <div class="card-body">
+                            ${projects.length === 0 ? `
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">📋</div>
+                                    <h3>No projects yet</h3>
+                                    <p>Create your first project to get started</p>
+                                </div>
+                            ` : `
+                                <div class="board">
+                                    <div class="board-column">
+                                        <div class="board-header">
+                                            <span>To Do</span>
+                                            <span class="board-count">0</span>
+                                        </div>
+                                        <button class="btn btn-secondary" style="width: 100%; margin-bottom: 0.75rem;" onclick="openModal('newTaskModal')">+ Add Task</button>
+                                    </div>
+                                    <div class="board-column">
+                                        <div class="board-header">
+                                            <span>In Progress</span>
+                                            <span class="board-count">0</span>
+                                        </div>
+                                    </div>
+                                    <div class="board-column">
+                                        <div class="board-header">
+                                            <span>Done</span>
+                                            <span class="board-count">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `}
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Quick Actions</h3>
+                        </div>
+                        <div class="card-body">
+                            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                <button class="btn btn-secondary" onclick="openModal('newProjectModal')" style="justify-content: flex-start;">
+                                    <span>📁</span> Create New Project
+                                </button>
+                                <button class="btn btn-secondary" onclick="showTimeTracker()" style="justify-content: flex-start;">
+                                    <span>⏱️</span> Start Time Tracker
+                                </button>
+                                <button class="btn btn-secondary" onclick="showClients()" style="justify-content: flex-start;">
+                                    <span>👥</span> Add Client
+                                </button>
+                                <button class="btn btn-secondary" onclick="showInvoices()" style="justify-content: flex-start;">
+                                    <span>💰</span> Create Invoice
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Recent Activity</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="empty-state" style="padding: 2rem;">
+                                <div class="empty-state-icon">📊</div>
+                                <h3>No activity yet</h3>
+                                <p>Your recent activity will appear here</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
-                  <div style="width:100%;background:var(--red-soft);border-radius:4px 4px 0 0;height:55px"></div>
-                  <span style="font-size:10px;color:var(--text-dim)">Jan</span>
+            `;
+            document.getElementById('mainContent').innerHTML = html;
+        }
+
+        function showProjects() {
+            const html = `
+                <div class="page-header">
+                    <h1 class="page-title">Projects</h1>
+                    <p class="page-subtitle">Manage your client projects</p>
                 </div>
-                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
-                  <div style="width:100%;background:var(--red-soft);border-radius:4px 4px 0 0;height:45px"></div>
-                  <span style="font-size:10px;color:var(--text-dim)">Feb</span>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">All Projects</h3>
+                        <button class="btn btn-primary" style="width: auto;" onclick="openModal('newProjectModal')">+ New Project</button>
+                    </div>
+                    <div class="card-body">
+                        ${projects.length === 0 ? `
+                            <div class="empty-state">
+                                <div class="empty-state-icon">📁</div>
+                                <h3>No projects yet</h3>
+                                <p>Create your first project to get started</p>
+                                <button class="btn btn-primary" style="margin-top: 1rem;" onclick="openModal('newProjectModal')">Create Project</button>
+                            </div>
+                        ` : `
+                            <div style="display: grid; gap: 1rem;">
+                                ${projects.map(p => `
+                                    <div style="padding: 1rem; border: 1px solid var(--border); border-radius: 8px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                                            <div>
+                                                <h4 style="margin-bottom: 0.25rem;">${p.name}</h4>
+                                                <p style="font-size: 0.875rem; color: var(--text-muted);">${p.client || 'No client'}</p>
+                                            </div>
+                                            <span style="padding: 0.25rem 0.75rem; background: var(--bg); border-radius: 9999px; font-size: 0.75rem;">Active</span>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `}
+                    </div>
                 </div>
-                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
-                  <div style="width:100%;background:var(--red);border-radius:4px 4px 0 0;height:70px"></div>
-                  <span style="font-size:10px;color:var(--text-dim)">Mar</span>
+            `;
+            document.getElementById('mainContent').innerHTML = html;
+        }
+
+        function showClients() {
+            const html = `
+                <div class="page-header">
+                    <h1 class="page-title">Clients</h1>
+                    <p class="page-subtitle">Manage your client relationships</p>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div style="overflow-x:auto">
-            <table class="table">
-              <thead>
-                <tr><th>Description</th><th>Category</th><th>Amount</th><th>Date</th><th>Tax</th></tr>
-              </thead>
-              <tbody id="expensesBody"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- ===== REPORTS ===== -->
-      <div class="panel" id="panel-finance">
-        <div style="font-family:'Syne';font-size:18px;font-weight:700;margin-bottom:20px">Financial Reports</div>
-
-        <div class="stats-grid" style="margin-bottom:20px">
-          <div class="stat-card green">
-            <div class="stat-label">Gross Revenue (YTD)</div>
-            <div class="stat-value">$0</div>
-          </div>
-          <div class="stat-card red" style="--card-accent:var(--red)">
-            <div class="stat-label">Expenses (YTD)</div>
-            <div class="stat-value">$0</div>
-          </div>
-          <div class="stat-card purple">
-            <div class="stat-label">Net Profit (YTD)</div>
-            <div class="stat-value">$0</div>
-          </div>
-          <div class="stat-card amber">
-            <div class="stat-label">Tax Estimate</div>
-            <div class="stat-value">—</div>
-          </div>
-        </div>
-
-        <div class="two-col">
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">Revenue vs Expenses</div>
-            </div>
-            <div class="card-body">
-              <div style="display:flex;flex-direction:column;gap:14px" id="reportsRevExp">
-                <div style="color:var(--text-muted);font-size:13px;text-align:center;padding:20px 0">Add invoices and expenses to see your breakdown.</div>
-              </div>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">Revenue by Client</div>
-            </div>
-            <div class="card-body">
-              <div style="display:flex;flex-direction:column;gap:12px" id="reportsClientBreakdown">
-                <div style="color:var(--text-muted);font-size:13px;text-align:center;padding:20px 0">Add clients and invoices to see revenue by client.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ===== CLIENTS ===== -->
-      <div class="panel" id="panel-clients">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-          <div style="font-family:'Syne';font-size:18px;font-weight:700">Clients</div>
-          <button class="btn btn-primary btn-sm" onclick="openModal('clientModal')">+ New Client</button>
-        </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px" id="clientsGrid"></div>
-      </div>
-
-      <!-- ===== PROPOSALS ===== -->
-      <div class="panel" id="panel-proposals">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-          <div style="font-family:'Syne';font-size:18px;font-weight:700">Proposals</div>
-          <button class="btn btn-primary btn-sm" onclick="openModal('proposalModal')">+ New Proposal</button>
-        </div>
-        <div class="card">
-          <div style="overflow-x:auto">
-            <table class="table">
-              <thead>
-                <tr><th>#</th><th>Title</th><th>Client</th><th>Value</th><th>Sent</th><th>Status</th><th></th></tr>
-              </thead>
-              <tbody id="proposalsBody"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-    </div><!-- /content -->
-  </main>
-</div>
-
-<!-- MODALS -->
-
-<!-- Project Modal -->
-<div class="modal-overlay" id="projectModal">
-  <div class="modal">
-    <div class="modal-title">New Project</div>
-    <div class="form-grid">
-      <div class="form-group">
-        <label class="form-label">Project Name</label>
-        <input type="text" class="form-input" id="projName" placeholder="Brand Identity…">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Client</label>
-        <input type="text" class="form-input" id="projClient" placeholder="Client name…">
-      </div>
-    </div>
-    <div class="form-grid">
-      <div class="form-group">
-        <label class="form-label">Budget ($)</label>
-        <input type="number" class="form-input" id="projBudget" placeholder="2,500">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Deadline</label>
-        <input type="date" class="form-input" id="projDue">
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Description</label>
-      <textarea class="form-input" id="projDesc" placeholder="Project scope and deliverables…"></textarea>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Type</label>
-      <select class="form-input" id="projType">
-        <option>Fixed Price</option><option>Hourly</option><option>Retainer</option>
-      </select>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal('projectModal')">Cancel</button>
-      <button class="btn btn-primary" onclick="submitProject()">Create Project</button>
-    </div>
-  </div>
-</div>
-
-<!-- Invoice Modal -->
-<div class="modal-overlay" id="invoiceModal">
-  <div class="modal">
-    <div class="modal-title">New Invoice</div>
-    <div class="form-grid">
-      <div class="form-group">
-        <label class="form-label">Client</label>
-        <input type="text" class="form-input" id="invClient" placeholder="Client name">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Project</label>
-        <input type="text" class="form-input" id="invProject" placeholder="Project name">
-      </div>
-    </div>
-    <div class="form-grid">
-      <div class="form-group">
-        <label class="form-label">Amount ($)</label>
-        <input type="number" class="form-input" id="invAmount" placeholder="1,500">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Due Date</label>
-        <input type="date" class="form-input" id="invDue">
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Payment Terms</label>
-      <select class="form-input">
-        <option>Net 15</option><option>Net 30</option><option>Net 60</option><option>Due on Receipt</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Notes</label>
-      <textarea class="form-input" placeholder="Additional notes or terms…" style="min-height:70px"></textarea>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal('invoiceModal')">Cancel</button>
-      <button class="btn btn-primary" onclick="submitInvoice()">Send Invoice</button>
-    </div>
-  </div>
-</div>
-
-<!-- Task Modal -->
-<div class="modal-overlay" id="taskModal">
-  <div class="modal">
-    <div class="modal-title">New Task</div>
-    <div class="form-group">
-      <label class="form-label">Task Name</label>
-      <input type="text" class="form-input" id="newTaskName" placeholder="e.g. Design homepage mockup">
-    </div>
-    <div class="form-grid">
-      <div class="form-group">
-        <label class="form-label">Project</label>
-        <select class="form-input" id="newTaskProject">
-          <option>General</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Priority</label>
-        <select class="form-input" id="newTaskPriority">
-          <option>High</option><option>Medium</option><option>Low</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Due Date</label>
-      <input type="date" class="form-input" id="newTaskDue">
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal('taskModal')">Cancel</button>
-      <button class="btn btn-primary" onclick="addTask()">Add Task</button>
-    </div>
-  </div>
-</div>
-
-<!-- Client Modal -->
-<div class="modal-overlay" id="clientModal">
-  <div class="modal">
-    <div class="modal-title">New Client</div>
-    <div class="form-grid">
-      <div class="form-group">
-        <label class="form-label">Company Name</label>
-        <input type="text" class="form-input" id="cliName" placeholder="Acme Corp">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Contact Person</label>
-        <input type="text" class="form-input" id="cliContact" placeholder="John Smith">
-      </div>
-    </div>
-    <div class="form-grid">
-      <div class="form-group">
-        <label class="form-label">Email</label>
-        <input type="email" class="form-input" id="cliEmail" placeholder="contact@acme.com">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Phone</label>
-        <input type="text" class="form-input" id="cliPhone" placeholder="+1 555 000 0000">
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Industry</label>
-      <select class="form-input" id="cliIndustry">
-        <option>Technology</option><option>Design</option><option>Finance</option><option>Retail</option><option>Healthcare</option><option>Other</option>
-      </select>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal('clientModal')">Cancel</button>
-      <button class="btn btn-primary" onclick="submitClient()">Add Client</button>
-    </div>
-  </div>
-</div>
-
-<!-- Deal Modal -->
-<div class="modal-overlay" id="dealModal">
-  <div class="modal">
-    <div class="modal-title">Add Deal</div>
-    <div class="form-group">
-      <label class="form-label">Deal Title</label>
-      <input type="text" class="form-input" id="dealTitle" placeholder="Website Redesign for…">
-    </div>
-    <div class="form-grid">
-      <div class="form-group">
-        <label class="form-label">Client</label>
-        <input type="text" class="form-input" id="dealClient" placeholder="Company name">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Value ($)</label>
-        <input type="number" class="form-input" id="dealValue" placeholder="3,000">
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Stage</label>
-      <select class="form-input" id="dealStage">
-        <option>Lead</option><option>Proposal</option><option>Negotiation</option><option>Won</option>
-      </select>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal('dealModal')">Cancel</button>
-      <button class="btn btn-primary" onclick="submitDeal()">Add Deal</button>
-    </div>
-  </div>
-</div>
-
-<!-- Expense Modal -->
-<div class="modal-overlay" id="expenseModal">
-  <div class="modal">
-    <div class="modal-title">Log Expense</div>
-    <div class="form-group">
-      <label class="form-label">Description</label>
-      <input type="text" class="form-input" id="expDesc" placeholder="Adobe Creative Cloud subscription">
-    </div>
-    <div class="form-grid">
-      <div class="form-group">
-        <label class="form-label">Amount ($)</label>
-        <input type="number" class="form-input" id="expAmount" placeholder="55">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Category</label>
-        <select class="form-input" id="expCat">
-          <option>Software</option><option>Hardware</option><option>Travel</option><option>Office</option><option>Marketing</option><option>Other</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-grid">
-      <div class="form-group">
-        <label class="form-label">Date</label>
-        <input type="date" class="form-input" id="expDate">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Tax Deductible?</label>
-        <select class="form-input" id="expTax">
-          <option>Yes</option><option>No</option>
-        </select>
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal('expenseModal')">Cancel</button>
-      <button class="btn btn-primary" onclick="submitExpense()">Log Expense</button>
-    </div>
-  </div>
-</div>
-
-<!-- Proposal Modal -->
-<div class="modal-overlay" id="proposalModal">
-  <div class="modal">
-    <div class="modal-title">New Proposal</div>
-    <div class="form-group">
-      <label class="form-label">Proposal Title</label>
-      <input type="text" class="form-input" id="propTitle" placeholder="UI/UX Design for XYZ App">
-    </div>
-    <div class="form-grid">
-      <div class="form-group">
-        <label class="form-label">Client</label>
-        <input type="text" class="form-input" id="propClient" placeholder="Client name">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Value ($)</label>
-        <input type="number" class="form-input" id="propValue" placeholder="4,500">
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Scope of Work</label>
-      <textarea class="form-input" id="propScope" placeholder="Describe deliverables, timeline, and terms…"></textarea>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal('proposalModal')">Cancel</button>
-      <button class="btn btn-primary" onclick="submitProposal()">Send Proposal</button>
-    </div>
-  </div>
-</div>
-
-<!-- Toast Container -->
-<div class="toast-container" id="toastContainer"></div>
-
-<script>
-// ==================== DATA ====================
-let currentUser = { name: '', email: '' };
-let projects = [];
-let tasks = [];
-let invoices = [];
-let clients = [];
-let expenses = [];
-let proposals = [];
-let pipeline = { Lead: [], Proposal: [], Negotiation: [], Won: [] };
-let invoiceCounter = 1;
-let proposalCounter = 1;
-let revenueData = [];
-
-// ==================== SIGNUP ====================
-function handleSignup() {
-  const nameVal = document.getElementById('signupName').value.trim();
-  const emailVal = document.getElementById('signupEmail').value.trim();
-  const errEl = document.getElementById('signupError');
-
-  if (!nameVal) {
-    errEl.textContent = 'Please enter your full name.';
-    errEl.style.display = 'block';
-    document.getElementById('signupName').focus();
-    return;
-  }
-  if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
-    errEl.textContent = 'Please enter a valid email address.';
-    errEl.style.display = 'block';
-    document.getElementById('signupEmail').focus();
-    return;
-  }
-
-  errEl.style.display = 'none';
-  currentUser.name = nameVal;
-  currentUser.email = emailVal;
-
-  // Derive initials
-  const parts = nameVal.trim().split(' ');
-  const firstName = parts[0];
-  const initials = parts.length >= 2
-    ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
-    : parts[0].slice(0, 2).toUpperCase();
-
-  // Update sidebar user info
-  document.querySelector('.avatar').textContent = initials;
-  document.querySelector('.user-name').textContent = nameVal;
-  document.querySelector('.user-plan').textContent = emailVal;
-
-  // Update dashboard greeting
-  const greetEl = document.getElementById('dash-greeting');
-  const subEl = document.getElementById('dash-subline');
-  if (greetEl) greetEl.textContent = `Good morning, ${firstName} 👋`;
-  if (subEl) subEl.textContent = "Here's your workspace — let's build something.";
-
-  // Animate out signup screen
-  const screen = document.getElementById('signupScreen');
-  screen.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-  screen.style.opacity = '0';
-  screen.style.transform = 'translateY(-12px)';
-  setTimeout(() => { screen.style.display = 'none'; }, 420);
-
-  setTimeout(() => showToast(`Welcome to Freelanfo, ${firstName}! 🎉`, 'green'), 500);
-}
-
-// ==================== NAVIGATION ====================
-function navigate(panel, el) {
-  // Update panels
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('panel-' + panel).classList.add('active');
-
-  // Update nav items
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  if (el) el.classList.add('active');
-
-  // Update topbar title
-  const titles = {
-    dashboard: 'Dashboard', projects: 'Projects', pipeline: 'Deal Pipeline',
-    timer: 'Time Tracker', tasks: 'Tasks', invoices: 'Invoices',
-    expenses: 'Expenses', finance: 'Reports', clients: 'Clients', proposals: 'Proposals'
-  };
-  document.getElementById('topbarTitle').textContent = titles[panel] || panel;
-
-  // Update CTA
-  const ctas = {
-    dashboard: ['+ New Project', 'projectModal'],
-    projects: ['+ New Project', 'projectModal'],
-    invoices: ['+ New Invoice', 'invoiceModal'],
-    clients: ['+ New Client', 'clientModal'],
-    tasks: ['+ New Task', 'taskModal'],
-    proposals: ['+ New Proposal', 'proposalModal'],
-    pipeline: ['+ Add Deal', 'dealModal'],
-    expenses: ['+ Log Expense', 'expenseModal'],
-  };
-  const cta = ctas[panel];
-  if (cta) {
-    document.getElementById('mainCTA').textContent = cta[0];
-    document.getElementById('mainCTA').setAttribute('onclick', `openModal('${cta[1]}')`);
-    document.getElementById('mainCTA').style.display = '';
-  } else {
-    document.getElementById('mainCTA').style.display = 'none';
-  }
-
-  closeSidebar();
-}
-
-// ==================== SIDEBAR ====================
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
-  document.getElementById('sidebarOverlay').classList.toggle('open');
-}
-function closeSidebar() {
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('sidebarOverlay').classList.remove('open');
-}
-
-// ==================== MODALS ====================
-function openModal(id) {
-  document.getElementById(id).classList.add('open');
-}
-function closeModal(id) {
-  document.getElementById(id).classList.remove('open');
-}
-function openMainCTA() {
-  // handled dynamically
-}
-
-// Close modals on overlay click
-document.querySelectorAll('.modal-overlay').forEach(o => {
-  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
-});
-
-// ==================== TOAST ====================
-function showToast(msg, type = '') {
-  const c = document.getElementById('toastContainer');
-  const t = document.createElement('div');
-  t.className = 'toast ' + type;
-  t.textContent = msg;
-  c.appendChild(t);
-  setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity 0.3s'; setTimeout(() => t.remove(), 350); }, 2800);
-}
-
-// ==================== RENDER PROJECTS ====================
-function renderProjects() {
-  const grid = document.getElementById('projectsGrid');
-  if (projects.length === 0) {
-    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">◫</div><p>No projects yet.<br>Click <strong>+ New Project</strong> to get started.</p></div>`;
-    return;
-  }
-  const statusColors = { 'On Track': 'green', 'In Progress': 'purple', 'At Risk': 'red', 'Review': 'amber' };
-  grid.innerHTML = projects.map(p => `
-    <div class="card" style="padding:20px;cursor:pointer">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-        <span class="badge badge-${statusColors[p.status]||'gray'}">${p.status}</span>
-        <span style="font-size:12px;color:var(--text-muted)">${p.type}</span>
-      </div>
-      <div style="font-family:'Syne';font-size:15px;font-weight:600;margin-bottom:4px">${p.name}</div>
-      <div style="font-size:12px;color:var(--text-muted);margin-bottom:16px">${p.client || '—'}</div>
-      <div style="margin-bottom:12px">
-        <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:12px">
-          <span style="color:var(--text-muted)">Progress</span>
-          <span>${p.progress}%</span>
-        </div>
-        <div class="progress-bar"><div class="progress-fill ${p.progress > 70 ? 'green' : p.progress > 40 ? '' : 'amber'}" style="width:${p.progress}%"></div></div>
-      </div>
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div style="font-family:'Syne';font-size:16px;font-weight:700">$${Number(p.budget).toLocaleString()}</div>
-        <div style="font-size:12px;color:var(--text-muted)">Due ${p.due ? p.due.slice(5).replace('-','/') : '—'}</div>
-      </div>
-      ${p.tags && p.tags.length ? `<div style="margin-top:10px">${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>` : ''}
-    </div>
-  `).join('');
-}
-
-// ==================== RENDER PIPELINE ====================
-function renderPipeline() {
-  const board = document.getElementById('pipelineBoard');
-  const stageColors = { Lead: 'var(--blue)', Proposal: 'var(--accent)', Negotiation: 'var(--amber)', Won: 'var(--green)' };
-  board.innerHTML = Object.entries(pipeline).map(([stage, deals]) => `
-    <div class="pipeline-col">
-      <div class="pipeline-col-header">
-        <span class="pipeline-col-title" style="color:${stageColors[stage]}">${stage}</span>
-        <span class="badge badge-gray">${deals.length}</span>
-      </div>
-      ${deals.length === 0
-        ? `<div style="color:var(--text-dim);font-size:12px;text-align:center;padding:20px 0">No deals yet</div>`
-        : deals.map(d => `
-        <div class="pipeline-card">
-          <div class="pipeline-card-title">${d.title}</div>
-          <div class="pipeline-card-meta">
-            <span>${d.client}</span>
-            <span style="color:var(--green);font-weight:600">$${Number(d.value).toLocaleString()}</span>
-          </div>
-        </div>
-      `).join('')}
-    </div>
-  `).join('');
-}
-
-// ==================== RENDER TASKS ====================
-function renderTasks() {
-  const body = document.getElementById('tasksBody');
-  const priorityColors = { High: 'red', Medium: 'amber', Low: 'gray' };
-  body.innerHTML = tasks.map((t, i) => `
-    <tr style="${t.done ? 'opacity:0.45' : ''}">
-      <td>
-        <div style="display:flex;align-items:center;gap:10px">
-          <input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTask(${i})" style="accent-color:var(--accent);cursor:pointer;width:15px;height:15px">
-          <span style="${t.done ? 'text-decoration:line-through;color:var(--text-muted)' : ''}">${t.name}</span>
-        </div>
-      </td>
-      <td style="color:var(--text-muted)">${t.project}</td>
-      <td><span class="badge badge-${priorityColors[t.priority]}">${t.priority}</span></td>
-      <td style="color:var(--text-muted)">${t.due.slice(5).replace('-','/')}</td>
-      <td><span class="badge ${t.done ? 'badge-green' : 'badge-gray'}">${t.done ? 'Done' : 'Pending'}</span></td>
-      <td><button class="btn btn-ghost btn-sm" style="padding:4px 8px;font-size:11px" onclick="tasks.splice(${i},1);renderTasks();renderDashboardTasks()">✕</button></td>
-    </tr>
-  `).join('');
-}
-
-function toggleTask(i) {
-  tasks[i].done = !tasks[i].done;
-  renderTasks();
-  renderDashboardTasks();
-  showToast(tasks[i].done ? 'Task completed! ✓' : 'Task reopened', tasks[i].done ? 'green' : '');
-}
-
-function filterTasks(filter, el) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  // visual only for now
-}
-
-function addTask() {
-  const name = document.getElementById('newTaskName').value.trim();
-  if (!name) { showToast('Please enter a task name', 'red'); return; }
-  tasks.unshift({
-    name,
-    project: document.getElementById('newTaskProject').value,
-    priority: document.getElementById('newTaskPriority').value,
-    due: document.getElementById('newTaskDue').value || '2026-03-10',
-    done: false
-  });
-  document.getElementById('newTaskName').value = '';
-  closeModal('taskModal');
-  renderTasks();
-  renderDashboardTasks();
-  showToast('Task added!', 'green');
-}
-
-// ==================== DASHBOARD TASKS ====================
-function renderDashboardTasks() {
-  const el = document.getElementById('dashboardTasks');
-  const today = tasks.filter(t => !t.done).slice(0, 5);
-  el.innerHTML = today.map((t, i) => `
-    <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)">
-      <input type="checkbox" onchange="toggleTask(${tasks.indexOf(t)})" style="accent-color:var(--accent);cursor:pointer;width:14px;height:14px">
-      <span style="font-size:13px;flex:1">${t.name}</span>
-      <span class="badge badge-${t.priority === 'High' ? 'red' : t.priority === 'Medium' ? 'amber' : 'gray'}" style="font-size:10px">${t.priority}</span>
-    </div>
-  `).join('') || '<div style="color:var(--text-muted);font-size:13px;padding:12px 0">All clear! 🎉</div>';
-}
-
-// ==================== RENDER INVOICES ====================
-function renderInvoices() {
-  const body = document.getElementById('invoicesBody');
-  if (invoices.length === 0) {
-    body.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">◱</div><p>No invoices yet.<br>Click <strong>+ New Invoice</strong> to create one.</p></div></td></tr>`;
-    return;
-  }
-  const statusColors = { Paid: 'green', Pending: 'amber', Overdue: 'red', Sent: 'blue' };
-  body.innerHTML = invoices.map(inv => `
-    <tr>
-      <td style="font-weight:600;color:var(--accent)">${inv.id}</td>
-      <td>${inv.client}</td>
-      <td style="color:var(--text-muted)">${inv.project}</td>
-      <td><strong>$${Number(inv.amount).toLocaleString()}</strong></td>
-      <td style="color:var(--text-muted)">${inv.issued}</td>
-      <td style="color:${inv.status === 'Overdue' ? 'var(--red)' : 'var(--text-muted)'}">${inv.due}</td>
-      <td><span class="badge badge-${statusColors[inv.status]||'gray'}">${inv.status}</span></td>
-      <td style="display:flex;gap:6px;padding:10px 16px">
-        <button class="btn btn-ghost btn-sm">View</button>
-        ${inv.status !== 'Paid' ? `<button class="btn btn-ghost btn-sm" style="color:var(--green)" onclick="markInvoicePaid('${inv.id}')">✓ Paid</button>` : ''}
-      </td>
-    </tr>
-  `).join('');
-}
-
-function markInvoicePaid(id) {
-  const inv = invoices.find(i => i.id === id);
-  if (inv) { inv.status = 'Paid'; renderInvoices(); showToast('Invoice marked as paid ✓', 'green'); }
-}
-
-// ==================== RENDER EXPENSES ====================
-function renderExpenses() {
-  const body = document.getElementById('expensesBody');
-  if (expenses.length === 0) {
-    body.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">◈</div><p>No expenses logged yet.<br>Click <strong>+ Log Expense</strong> to track one.</p></div></td></tr>`;
-    document.getElementById('expenseCats').innerHTML = `<div style="color:var(--text-muted);font-size:13px;text-align:center;padding:20px 0">No expenses yet.</div>`;
-    return;
-  }
-  body.innerHTML = expenses.map(e => `
-    <tr>
-      <td>${e.desc}</td>
-      <td><span class="badge badge-gray">${e.category}</span></td>
-      <td><strong>$${Number(e.amount).toFixed(2)}</strong></td>
-      <td style="color:var(--text-muted)">${e.date}</td>
-      <td><span class="badge ${e.tax ? 'badge-green' : 'badge-gray'}">${e.tax ? 'Yes' : 'No'}</span></td>
-    </tr>
-  `).join('');
-
-  const cats = {};
-  expenses.forEach(e => { cats[e.category] = (cats[e.category] || 0) + Number(e.amount); });
-  const total = Object.values(cats).reduce((a, b) => a + b, 0);
-  const catEl = document.getElementById('expenseCats');
-  catEl.innerHTML = Object.entries(cats).map(([cat, amt]) => `
-    <div style="margin-bottom:12px">
-      <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:13px">
-        <span>${cat}</span><span style="color:var(--text-muted)">$${amt.toFixed(0)}</span>
-      </div>
-      <div class="progress-bar"><div class="progress-fill" style="width:${(amt/total*100).toFixed(0)}%;background:var(--red)"></div></div>
-    </div>
-  `).join('');
-}
-
-// ==================== RENDER CLIENTS ====================
-function renderClients() {
-  const grid = document.getElementById('clientsGrid');
-  if (clients.length === 0) {
-    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">◎</div><p>No clients yet.<br>Click <strong>+ New Client</strong> to add one.</p></div>`;
-    return;
-  }
-  grid.innerHTML = clients.map(c => `
-    <div class="client-card">
-      <div class="client-avatar" style="background:var(--surface3)">${c.emoji || '👤'}</div>
-      <div style="font-family:'Syne';font-weight:600;font-size:15px;margin-bottom:2px">${c.name}</div>
-      <div style="font-size:12px;color:var(--text-muted);margin-bottom:14px">${c.contact}${c.email ? ' · ' + c.email : ''}</div>
-      <div style="display:flex;justify-content:space-between;font-size:12px">
-        <div>
-          <div style="color:var(--text-dim);margin-bottom:2px">Industry</div>
-          <div style="font-weight:500">${c.industry || '—'}</div>
-        </div>
-        <div>
-          <button class="btn btn-ghost btn-sm" style="margin-top:0">View</button>
-        </div>
-      </div>
-    </div>
-  `).join('');
-}
-
-// ==================== RENDER PROPOSALS ====================
-function renderProposals() {
-  const body = document.getElementById('proposalsBody');
-  if (proposals.length === 0) {
-    body.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">◧</div><p>No proposals yet.<br>Click <strong>+ New Proposal</strong> to create one.</p></div></td></tr>`;
-    return;
-  }
-  const statusColors = { Accepted: 'green', Sent: 'blue', Viewed: 'amber', Declined: 'red' };
-  body.innerHTML = proposals.map(p => `
-    <tr>
-      <td style="font-weight:600;color:var(--accent)">${p.id}</td>
-      <td><strong>${p.title}</strong></td>
-      <td style="color:var(--text-muted)">${p.client}</td>
-      <td><strong>$${Number(p.value).toLocaleString()}</strong></td>
-      <td style="color:var(--text-muted)">${p.sent}</td>
-      <td><span class="badge badge-${statusColors[p.status]||'gray'}">${p.status}</span></td>
-      <td><button class="btn btn-ghost btn-sm">View</button></td>
-    </tr>
-  `).join('');
-}
-
-// ==================== RENDER REVENUE CHART ====================
-function renderRevenueChart() {
-  const chart = document.getElementById('revenueChart');
-  const labels = document.getElementById('revenueLabels');
-  if (!revenueData.length) {
-    chart.innerHTML = `<div style="color:var(--text-dim);font-size:13px;text-align:center;width:100%;padding:40px 0">No revenue data yet</div>`;
-    labels.innerHTML = '';
-    return;
-  }
-  const max = Math.max(...revenueData.map(d => d.value));
-  chart.innerHTML = revenueData.map(d => `
-    <div class="chart-bar-wrap">
-      <div class="chart-bar" style="height:${(d.value / max * 100).toFixed(0)}%" title="$${d.value.toLocaleString()}"></div>
-    </div>
-  `).join('');
-  labels.innerHTML = revenueData.map(d => `<span>${d.month}</span>`).join('');
-}
-
-// ==================== TIMER ====================
-let timerInterval = null;
-let timerSeconds = 0;
-let timerRunning = false;
-
-function formatTime(sec) {
-  const h = Math.floor(sec / 3600).toString().padStart(2, '0');
-  const m = Math.floor((sec % 3600) / 60).toString().padStart(2, '0');
-  const s = (sec % 60).toString().padStart(2, '0');
-  return `${h}:${m}:${s}`;
-}
-
-function toggleTimer() {
-  if (timerRunning) {
-    clearInterval(timerInterval);
-    timerRunning = false;
-    document.getElementById('timerPlayBtn').textContent = '▶';
-    document.getElementById('timerStatus').textContent = 'Paused';
-    document.getElementById('timerStatus').className = 'badge badge-amber';
-  } else {
-    timerInterval = setInterval(() => {
-      timerSeconds++;
-      document.getElementById('timerDisplay').textContent = formatTime(timerSeconds);
-    }, 1000);
-    timerRunning = true;
-    document.getElementById('timerPlayBtn').textContent = '⏸';
-    document.getElementById('timerStatus').textContent = 'Running';
-    document.getElementById('timerStatus').className = 'badge badge-green';
-  }
-}
-
-function stopTimer() {
-  if (timerSeconds === 0) return;
-  clearInterval(timerInterval);
-  timerRunning = false;
-  const dur = formatTime(timerSeconds);
-  const proj = document.getElementById('timerProject').value || 'General';
-  const desc = document.getElementById('timerDesc').value || 'Work session';
-
-  // Add to log
-  const row = document.createElement('tr');
-  row.innerHTML = `<td><strong>${proj.split(' ')[0]}</strong></td><td style="color:var(--text-muted)">${desc}</td><td>${dur}</td><td style="color:var(--text-muted)">Today</td>`;
-  const logBody = document.getElementById('timeLogBody');
-  logBody.prepend(row);
-  logActivity(`Logged <strong>${dur}</strong> on ${proj.split(' ')[0]}`);
-
-  timerSeconds = 0;
-  document.getElementById('timerDisplay').textContent = '00:00:00';
-  document.getElementById('timerPlayBtn').textContent = '▶';
-  document.getElementById('timerStatus').textContent = 'Idle';
-  document.getElementById('timerStatus').className = 'badge badge-gray';
-  document.getElementById('timerDesc').value = '';
-  showToast(`Logged ${dur} for ${proj.split(' ')[0]}`, 'green');
-}
-
-function resetTimer() {
-  clearInterval(timerInterval);
-  timerRunning = false;
-  timerSeconds = 0;
-  document.getElementById('timerDisplay').textContent = '00:00:00';
-  document.getElementById('timerPlayBtn').textContent = '▶';
-  document.getElementById('timerStatus').textContent = 'Idle';
-  document.getElementById('timerStatus').className = 'badge badge-gray';
-}
-
-// ==================== ACTIVITY LOG ====================
-function logActivity(msg) {
-  const tl = document.getElementById('activityTimeline');
-  if (!tl) return;
-  const item = document.createElement('div');
-  item.className = 'timeline-item';
-  item.innerHTML = `<div class="timeline-time">Just now</div><div class="timeline-text">${msg}</div>`;
-  if (tl.firstChild && tl.firstChild.style && tl.firstChild.style.color) tl.innerHTML = '';
-  tl.prepend(item);
-}
-
-function refreshTaskProjects() {
-  const sel = document.getElementById('newTaskProject');
-  if (!sel) return;
-  sel.innerHTML = '<option>General</option>' +
-    projects.map(p => `<option>${p.name}</option>`).join('');
-}
-
-function refreshTimerProjects() {
-  const sel = document.getElementById('timerProject');
-  if (!sel) return;
-  const cur = sel.value;
-  sel.innerHTML = '<option value="">— Select a project —</option>' +
-    projects.map(p => `<option value="${p.name}" ${p.name===cur?'selected':''}>${p.name}</option>`).join('');
-}
-
-// ==================== SUBMIT FUNCTIONS ====================
-function submitProject() {
-  const name = document.getElementById('projName').value.trim();
-  if (!name) { showToast('Please enter a project name', 'red'); return; }
-  projects.push({
-    name,
-    client: document.getElementById('projClient').value.trim() || '—',
-    budget: document.getElementById('projBudget').value || 0,
-    due: document.getElementById('projDue').value,
-    progress: 0,
-    status: 'In Progress',
-    type: document.getElementById('projType').value,
-    tags: []
-  });
-  document.getElementById('projName').value = '';
-  document.getElementById('projClient').value = '';
-  document.getElementById('projBudget').value = '';
-  document.getElementById('projDue').value = '';
-  closeModal('projectModal');
-  renderProjects();
-  refreshTimerProjects();
-  refreshTaskProjects();
-  updateDashboardStats();
-  logActivity(`<strong>${name}</strong> project created`);
-  showToast('Project created!', 'green');
-}
-
-function submitInvoice() {
-  const client = document.getElementById('invClient').value.trim();
-  const amount = document.getElementById('invAmount').value;
-  if (!client || !amount) { showToast('Please fill in client and amount', 'red'); return; }
-  const now = new Date();
-  const dueDate = document.getElementById('invDue').value;
-  invoices.unshift({
-    id: 'INV-' + String(invoiceCounter++).padStart(3, '0'),
-    client,
-    project: document.getElementById('invProject').value.trim() || '—',
-    amount: Number(amount),
-    issued: now.toLocaleDateString('en-US', { month:'short', day:'numeric' }),
-    due: dueDate ? new Date(dueDate).toLocaleDateString('en-US', { month:'short', day:'numeric' }) : '—',
-    status: 'Sent'
-  });
-  document.getElementById('invClient').value = '';
-  document.getElementById('invProject').value = '';
-  document.getElementById('invAmount').value = '';
-  document.getElementById('invDue').value = '';
-  closeModal('invoiceModal');
-  renderInvoices();
-  updateDashboardStats();
-  logActivity(`Invoice <strong>${invoices[0].id}</strong> sent to ${client}`);
-  showToast('Invoice sent! 📨', 'green');
-}
-
-function submitClient() {
-  const name = document.getElementById('cliName').value.trim();
-  if (!name) { showToast('Please enter a company name', 'red'); return; }
-  const emojis = ['🏢','🚀','🎨','📊','💼','🌟','⚡','🔷'];
-  clients.push({
-    name,
-    contact: document.getElementById('cliContact').value.trim() || '—',
-    email: document.getElementById('cliEmail').value.trim(),
-    phone: document.getElementById('cliPhone').value.trim(),
-    industry: document.getElementById('cliIndustry').value,
-    emoji: emojis[clients.length % emojis.length]
-  });
-  document.getElementById('cliName').value = '';
-  document.getElementById('cliContact').value = '';
-  document.getElementById('cliEmail').value = '';
-  document.getElementById('cliPhone').value = '';
-  closeModal('clientModal');
-  renderClients();
-  logActivity(`Client <strong>${name}</strong> added`);
-  showToast('Client added!', 'green');
-}
-
-function submitDeal() {
-  const title = document.getElementById('dealTitle').value.trim();
-  if (!title) { showToast('Please enter a deal title', 'red'); return; }
-  const stage = document.getElementById('dealStage').value;
-  pipeline[stage].push({
-    title,
-    client: document.getElementById('dealClient').value.trim() || '—',
-    value: document.getElementById('dealValue').value || 0
-  });
-  document.getElementById('dealTitle').value = '';
-  document.getElementById('dealClient').value = '';
-  document.getElementById('dealValue').value = '';
-  closeModal('dealModal');
-  renderPipeline();
-  showToast('Deal added!', 'green');
-}
-
-function submitExpense() {
-  const desc = document.getElementById('expDesc').value.trim();
-  const amount = document.getElementById('expAmount').value;
-  if (!desc || !amount) { showToast('Please fill in description and amount', 'red'); return; }
-  const dateVal = document.getElementById('expDate').value;
-  const dateStr = dateVal ? new Date(dateVal).toLocaleDateString('en-US', { month:'short', day:'numeric' }) : 'Today';
-  expenses.unshift({
-    desc,
-    category: document.getElementById('expCat').value,
-    amount: Number(amount),
-    date: dateStr,
-    tax: document.getElementById('expTax').value === 'Yes'
-  });
-  document.getElementById('expDesc').value = '';
-  document.getElementById('expAmount').value = '';
-  closeModal('expenseModal');
-  renderExpenses();
-  showToast('Expense logged!', 'green');
-}
-
-function submitProposal() {
-  const title = document.getElementById('propTitle').value.trim();
-  const client = document.getElementById('propClient').value.trim();
-  if (!title || !client) { showToast('Please fill in title and client', 'red'); return; }
-  const now = new Date();
-  proposals.unshift({
-    id: 'P-' + String(proposalCounter++).padStart(2, '0'),
-    title,
-    client,
-    value: document.getElementById('propValue').value || 0,
-    sent: now.toLocaleDateString('en-US', { month:'short', day:'numeric' }),
-    status: 'Sent'
-  });
-  document.getElementById('propTitle').value = '';
-  document.getElementById('propClient').value = '';
-  document.getElementById('propValue').value = '';
-  document.getElementById('propScope').value = '';
-  closeModal('proposalModal');
-  renderProposals();
-  logActivity(`Proposal <strong>${proposals[0].id}</strong> sent to ${client}`);
-  showToast('Proposal sent! 🚀', 'green');
-}
-
-// ==================== UPDATE DASHBOARD STATS ====================
-function updateDashboardStats() {
-  const totalRevenue = invoices.filter(i => i.status === 'Paid').reduce((s, i) => s + Number(i.amount), 0);
-  const unpaid = invoices.filter(i => i.status !== 'Paid').reduce((s, i) => s + Number(i.amount), 0);
-
-  const elRevenue = document.getElementById('stat-revenue');
-  const elProjects = document.getElementById('stat-projects');
-  const elUnpaid = document.getElementById('stat-unpaid');
-  if (elRevenue) elRevenue.textContent = '$' + totalRevenue.toLocaleString();
-  if (elProjects) elProjects.textContent = projects.length;
-  if (elUnpaid) elUnpaid.textContent = '$' + unpaid.toLocaleString();
-
-  // Active projects table on dashboard
-  const tbody = document.getElementById('dash-projects-tbody');
-  if (tbody) {
-    if (projects.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:28px;color:var(--text-muted)">No projects yet — click <strong>+ New Project</strong> to get started.</td></tr>`;
-    } else {
-      const statusColors = { 'On Track': 'green', 'In Progress': 'purple', 'At Risk': 'red', 'Review': 'amber' };
-      tbody.innerHTML = projects.slice(0, 5).map(p => `
-        <tr>
-          <td><strong>${p.name}</strong></td>
-          <td>${p.client || '—'}</td>
-          <td style="min-width:120px">
-            <div style="display:flex;align-items:center;gap:8px">
-              <div class="progress-bar" style="flex:1"><div class="progress-fill ${p.progress > 70 ? 'green' : ''}" style="width:${p.progress}%"></div></div>
-              <span style="font-size:11px;color:var(--text-muted)">${p.progress}%</span>
-            </div>
-          </td>
-          <td style="color:var(--text-muted)">${p.due ? p.due.slice(5).replace('-','/') : '—'}</td>
-          <td><strong>$${Number(p.budget).toLocaleString()}</strong></td>
-          <td><span class="badge badge-${statusColors[p.status]||'gray'}">${p.status}</span></td>
-        </tr>
-      `).join('');
-    }
-  }
-
-  // Pending invoices on dashboard
-  const pendingEl = document.getElementById('dash-pending-invoices');
-  if (pendingEl) {
-    const pending = invoices.filter(i => i.status !== 'Paid').slice(0, 3);
-    if (pending.length === 0) {
-      pendingEl.innerHTML = `<div style="color:var(--text-muted);font-size:13px;padding:12px 0">No pending invoices 🎉</div>`;
-    } else {
-      pendingEl.innerHTML = pending.map(inv => `
-        <div class="income-line">
-          <div>
-            <div style="font-weight:500">${inv.id} · ${inv.client}</div>
-            <div style="font-size:11px;color:${inv.status==='Overdue'?'var(--red)':'var(--text-muted)'}">${inv.status === 'Overdue' ? '⚠ Overdue' : 'Due ' + inv.due}</div>
-          </div>
-          <div><div class="amount">$${Number(inv.amount).toLocaleString()}</div></div>
-        </div>
-      `).join('');
-    }
-  }
-}
-
-// ==================== INIT ====================
-function init() {
-  renderProjects();
-  renderPipeline();
-  renderTasks();
-  renderDashboardTasks();
-  renderInvoices();
-  renderExpenses();
-  renderClients();
-  renderProposals();
-  renderRevenueChart();
-  updateDashboardStats();
-}
-
-init();
-</script>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Client List</h3>
+                        <button class="btn btn-primary" style="width: auto;" onclick="openModal('newClientModal')">+ Add Client</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">👥</div>
+                            <h3>No clients yet</h3>
+                            <p>Add your first client to get started</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('mainContent').innerHTML = html;
+        }
+
+        function showTimeTracker() {
+            const html = `
+                <div class="page-header">
+                    <h1 class="page-title">Time Tracker</h1>
+                    <p class="page-subtitle">Track time for your projects</p>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="timer-display">
+                            <div class="timer-time" id="timerDisplay">00:00:00</div>
+                            <div style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0.5rem;">
+                                ${projects.length > 0 ? 'Ready to track' : 'Create a project first'}
+                            </div>
+                        </div>
+                        
+                        <div class="timer-controls">
+                            <button class="timer-btn play" id="startBtn" onclick="startTimer()" ${projects.length === 0 ? 'disabled style="opacity: 0.5;"' : ''}>▶</button>
+                            <button class="timer-btn pause hidden" id="pauseBtn" onclick="pauseTimer()">⏸</button>
+                            <button class="timer-btn stop" onclick="stopTimer()" ${projects.length === 0 ? 'disabled style="opacity: 0.5;"' : ''}>⏹</button>
+                        </div>
+
+                        <div style="margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+                            <h4 style="margin-bottom: 1rem;">Today's Sessions</h4>
+                            <p style="color: var(--text-muted); text-align: center; padding: 2rem;">No sessions recorded today</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('mainContent').innerHTML = html;
+        }
+
+        function showInvoices() {
+            const html = `
+                <div class="page-header">
+                    <h1 class="page-title">Invoices</h1>
+                    <p class="page-subtitle">Manage your billing</p>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">All Invoices</h3>
+                        <button class="btn btn-primary" style="width: auto;">+ Create Invoice</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">💰</div>
+                            <h3>No invoices yet</h3>
+                            <p>Create your first invoice to get paid</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('mainContent').innerHTML = html;
+        }
+
+        function showTasks() {
+            showDashboard();
+            // Would show task list view
+        }
+
+        function showProposals() {
+            showDashboard();
+        }
+
+        function showReports() {
+            showDashboard();
+        }
+
+        function showFinance() {
+            showInvoices();
+        }
+
+        // Modal Functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Populate selects if needed
+            if (modalId === 'newTaskModal') {
+                const select = document.getElementById('taskProject');
+                select.innerHTML = '<option value="">Select project...</option>' + 
+                    projects.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Data Functions
+        function createProject(e) {
+            e.preventDefault();
+            
+            const project = {
+                name: document.getElementById('projectName').value,
+                client: document.getElementById('projectClient').value,
+                budget: document.getElementById('projectBudget').value,
+                dueDate: document.getElementById('projectDueDate').value,
+                createdAt: new Date()
+            };
+            
+            projects.push(project);
+            closeModal('newProjectModal');
+            e.target.reset();
+            
+            // Refresh view
+            showDashboard();
+        }
+
+        function createTask(e) {
+            e.preventDefault();
+            
+            const task = {
+                title: document.getElementById('taskTitle').value,
+                project: document.getElementById('taskProject').value,
+                priority: document.getElementById('taskPriority').value,
+                status: 'todo',
+                createdAt: new Date()
+            };
+            
+            tasks.push(task);
+            closeModal('newTaskModal');
+            e.target.reset();
+            
+            // Update badge
+            document.getElementById('taskBadge').textContent = tasks.length;
+            
+            showDashboard();
+        }
+
+        // Timer Functions
+        let timerInterval;
+        let seconds = 0;
+        let isRunning = false;
+
+        function updateDisplay() {
+            const hrs = Math.floor(seconds / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            const display = document.getElementById('timerDisplay');
+            if (display) {
+                display.textContent = 
+                    `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+        }
+
+        function startTimer() {
+            if (!isRunning) {
+                isRunning = true;
+                const startBtn = document.getElementById('startBtn');
+                const pauseBtn = document.getElementById('pauseBtn');
+                if (startBtn) startBtn.classList.add('hidden');
+                if (pauseBtn) pauseBtn.classList.remove('hidden');
+                
+                timerInterval = setInterval(() => {
+                    seconds++;
+                    updateDisplay();
+                }, 1000);
+            }
+        }
+
+        function pauseTimer() {
+            isRunning = false;
+            clearInterval(timerInterval);
+            const startBtn = document.getElementById('startBtn');
+            const pauseBtn = document.getElementById('pauseBtn');
+            if (startBtn) startBtn.classList.remove('hidden');
+            if (pauseBtn) pauseBtn.classList.add('hidden');
+        }
+
+        function stopTimer() {
+            pauseTimer();
+            seconds = 0;
+            updateDisplay();
+        }
+
+        // Close modal when clicking overlay
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            const sidebar = document.getElementById('sidebar');
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+            
+            if (window.innerWidth < 1024 && 
+                sidebar.classList.contains('open') &&
+                !sidebar.contains(e.target) && 
+                !menuBtn.contains(e.target)) {
+                sidebar.classList.remove('open');
+            }
+        });
+
+        function toggleUserMenu() {
+            // Could show dropdown with profile/logout
+            if (confirm('Logout?')) {
+                handleLogout();
+            }
+        }
+    </script>
 </body>
 </html>
